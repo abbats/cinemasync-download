@@ -1,0 +1,23 @@
+name: Publish release
+on:
+  push:
+    paths: ['CinemaSync.apk', 'VERSION']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release with the APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=$(cat VERSION)
+          gh release delete "v$V" -y --cleanup-tag 2>/dev/null || true
+          gh release create "v$V" CinemaSync.apk --title "Cinema Sync $V" --latest --notes "Cinema Sync for Android, version $V.
+
+          Install: open CinemaSync.apk on your phone and allow installing from this source if Android asks.
+
+          Cinema Sync is only a player and synchroniser — it does not provide or distribute any content.
+          Terms: https://cinemasync.app/en/terms/ · Privacy: https://cinemasync.app/en/privacy/"
